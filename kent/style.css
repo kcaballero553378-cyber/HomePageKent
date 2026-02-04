@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* HEADER */
+.header {
+    background-image: linear-gradient(90deg, #d027f1 0%, #400db6 35%, #2f079c 100%);
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* SECTIONS */
+section {
+    padding: 30px 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1c1c1d;
+}
+
+/* SKILLS & PROJECTS */
+.skills,
+.projects {
+    color: white;
+}
+
+/* CARD GRID */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 20px;
+    justify-items: center;
+}
+
+/* CARD */
+.card {
+    width: 290px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: white;
+    box-shadow: 10px 15px 20px #1c1c1d;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    height: 180px;
+    object-fit: contain;
+    padding: 15px;
+}
+
+/* CONTACT */
+.contact p {
+    text-align: center;
+    margin: 5px 0;
+}
+
+/* FOOTER */
+.footer {
+    background-image: linear-gradient(90deg, #4c0ac5 0%, #380ab8 35%, #4515b6 100%);
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
