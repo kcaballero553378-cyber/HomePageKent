@@ -11,7 +11,12 @@
   Research Title: <input type="text" name="title"><br><br>
   Author: <input type="text" name="author"><br><br>
   Category: <input type="text" name="category"><br><br>
-  Status: <input type="text" name="status"><br><br>
+  Status:
+  <select name="status">
+    <option value="Pending">Pending</option>
+    <option value="Ongoing">Ongoing</option>
+    <option value="Completed">Completed</option>
+  </select><br><br>
   <input type="submit" value="Submit">
 </form>
 
