@@ -1,39 +1,50 @@
+<?php
+session_start();
+
+/* If already logged in, go to dashboard */
+if (isset($_SESSION['logged_in'])) {
+    header("Location: kentoy.php");
+    exit();
+}
+
+/* Handle login */
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    /* Simple demo account */
+    if ($username === "admin" && $password === "1234") {
+
+        $_SESSION['logged_in'] = true;
+        $_SESSION['username'] = $username;
+
+        /* Cookie valid for 1 day */
+        setcookie("user", $username, time() + 86400, "/");
+
+        header("Location: kentoy.php");
+        exit();
+    } else {
+        $error = "Invalid username or password!";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Research Management System</title>
+    <title>Login</title>
 </head>
 <body>
 
-<h2>Research Management System</h2>
+<h2>Login</h2>
 
-<form method="POST" action="">
-  Research Title: <input type="text" name="title"><br><br>
-  Author: <input type="text" name="author"><br><br>
-  Category: <input type="text" name="category"><br><br>
-  Status:
-  <select name="status">
-    <option value="Pending">Pending</option>
-    <option value="Ongoing">Ongoing</option>
-    <option value="Completed">Completed</option>
-  </select><br><br>
-  <input type="submit" value="Submit">
+<?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+
+<form method="POST">
+    Username: <input type="text" name="username" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <input type="submit" value="Login">
 </form>
-
-<?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $title    = htmlspecialchars($_POST['title']);
-  $author   = htmlspecialchars($_POST['author']);
-  $category = htmlspecialchars($_POST['category']);
-  $status   = htmlspecialchars($_POST['status']);
-
-  echo "<h3>Form Data Received (POST):</h3>";
-  echo "Title: "    . $title    . "<br>";
-  echo "Author: "   . $author   . "<br>";
-  echo "Category: " . $category . "<br>";
-  echo "Status: "   . $status   . "<br>";
-}
-?>
 
 </body>
 </html>
