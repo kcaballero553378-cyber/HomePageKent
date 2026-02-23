@@ -1,49 +1,62 @@
 <?php
 session_start();
 
-/* If already logged in, go to dashboard */
-if (isset($_SESSION['logged_in'])) {
+/* ✅ AUTO REDIRECT IF ALREADY LOGGED IN */
+if (isset($_SESSION["logged_in"])) {
     header("Location: kentoy.php");
     exit();
 }
 
-/* Handle login */
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+$error = "";
 
-    /* Simple demo account */
-    if ($username === "admin" && $password === "1234") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-        $_SESSION['logged_in'] = true;
-        $_SESSION['username'] = $username;
+    $username = trim($_POST["username"]);
+    $email    = trim($_POST["email"]);
+    $password = $_POST["password"];
+    $confirm  = $_POST["confirm"];
 
-        /* Cookie valid for 1 day */
-        setcookie("user", $username, time() + 86400, "/");
+    /* ✅ FORM VALIDATIONS */
+    if (empty($username) || empty($email) || empty($password) || empty($confirm)) {
+        $error = "All fields are required.";
+    } elseif (strlen($username) < 4) {
+        $error = "Username must be at least 4 characters.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Invalid email format.";
+    } elseif ($password !== $confirm) {
+        $error = "Passwords do not match.";
+    } else {
+
+        /* ✅ SESSION */
+        $_SESSION["logged_in"] = true;
+        $_SESSION["username"]  = $username;
+
+        /* ✅ COOKIE */
+        setcookie("user", $username, time() + (86400 * 7), "/");
 
         header("Location: kentoy.php");
         exit();
-    } else {
-        $error = "Invalid username or password!";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login / Signup</title>
 </head>
 <body>
 
-<h2>Login</h2>
+<h2>Login / Signup</h2>
 
-<?php if (!empty($error)) echo "<p style='color:red;'>$error</p>"; ?>
+<?php if ($error) echo "<p style='color:red;'>$error</p>"; ?>
 
 <form method="POST">
-    Username: <input type="text" name="username" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
-    <input type="submit" value="Login">
+    Username: <input type="text" name="username"><br><br>
+    Email: <input type="email" name="email"><br><br>
+    Password: <input type="password" name="password"><br><br>
+    Confirm Password: <input type="password" name="confirm"><br><br>
+
+    <button type="submit">Login</button>
 </form>
 
 </body>
