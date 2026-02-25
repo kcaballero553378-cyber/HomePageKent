@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-session_unset();
-session_destroy();
+// Unset the username session variable to log the user out
+unset($_SESSION['username']);
 
-setcookie("user", "", time() - 3600, "/");
-
-header("Location: kent.php");
+// Redirect to login page
+header("Location: login.php");
 exit();
+?>
