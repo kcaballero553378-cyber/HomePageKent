@@ -23,7 +23,7 @@
             <button type="submit">Save</button>
         </form>
         
-        <a href="read.php">View Transactions</a>
+        <a id ="a1" href="read.php">View Transactions</a>
     </div>
 </body>
 </html>
