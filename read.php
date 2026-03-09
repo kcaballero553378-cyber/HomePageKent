@@ -1,36 +1,35 @@
 <?php
-require 'db.php';
-$stmt = $pdo->query("SELECT * FROM transactions ORDER BY id DESC");
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+require 'database.php'; 
+
+$stmt=$pdo->query("SELECT * FROM researches");
 ?>
- <link rel="stylesheet" href="css.css">
- 
-<h2>Transaction List</h2>
-<a id="a1" href="kent.php">Add New</a>
- 
- 
-<table border="1" cellpadding="8">
+
+<table border="1">
 <tr>
-    <th>ID</th>
-    <th>Item</th>
-    <th>Price</th>
-    <th>Qty</th>
-    <th>Total</th>
-    <th>Action</th>
+<th>Title</th>
+<th>Author</th>
+<th>Category</th>
+<th>Year</th>
+<th>Action</th>
 </tr>
- 
- 
-<?php foreach ($rows as $row): ?>
+
+<?php while($row=$stmt->fetch()): ?>
+
 <tr>
-    <td><?= $row['id'] ?></td>
-    <td><?= $row['item'] ?></td>
-    <td><?= $row['price'] ?></td>
-    <td><?= $row['qty'] ?></td>
-    <td><?= $row['total'] ?></td>
-    <td>
-        <a href="update.php?id=<?= $row['id'] ?>">Edit</a> |
-        <a href="delete.php?id=<?= $row['id'] ?>">Delete</a>
-    </td>
+<td><?= $row['title'] ?></td>
+<td><?= $row['author'] ?></td>
+<td><?= $row['category'] ?></td>
+<td><?= $row['year'] ?></td>
+
+<td>
+<a href="update.php?id=<?= $row['id']?>">Edit</a>
+<a href="delete.php?id=<?= $row['id']?>"
+onclick="return confirm('Delete this record?')">
+Delete
+</a>
+</td>
+
 </tr>
-<?php endforeach; ?>
+
+<?php endwhile; ?>
 </table>

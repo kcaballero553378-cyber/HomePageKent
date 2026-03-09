@@ -1,54 +1,42 @@
 <?php
-require 'db.php';
+session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $item = $_POST['item'];
-    $price = $_POST['price'];
-    $qty = $_POST['qty'];
+require 'database.php';
 
-    // Server-side validation (security only, no die())
-    if ($price >= 0 && $qty >= 0) {
-        $total = $price * $qty;
-        $sql = "INSERT INTO transactions (item, price, qty, total) 
-                VALUES (:item, :price, :qty, :total)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':item' => $item,
-            ':price' => $price,
-            ':qty' => $qty,
-            ':total' => $total
-        ]);
-        header("Location: read.php");
-        exit;
-    }
-    // If invalid, just let browser validation handle it — no error page
+
+
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+$title = $_POST['title'];
+$author = $_POST['author'];
+$category = $_POST['category'];
+$year = $_POST['year'];
+
+if(empty($title) || empty($author) || empty($category) || empty($year)){
+    echo "All fields required";
+} else {
+
+$stmt = $pdo->prepare("INSERT INTO researches(title,author,category,year) VALUES (?,?,?,?)");
+$stmt->execute([$title,$author,$category,$year]);
+
+header("Location: read.php");
+exit(); // IMPORTANT
+}
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Transaction</title>
-    <link rel="stylesheet" href="css.css">
-</head>
-<body>
-<div class="container">
-    <h2>Add Transaction</h2>
 
-    <form method="post">
-        <label for="item">Item:</label>
-        <input type="text" id="item" name="item" required><br>
+<h2>Add Research</h2>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" step="0.01" min="0" required><br>
+<form method="POST">
 
-        <label for="qty">Quantity:</label>
-        <input type="number" id="qty" name="qty" min="0" required><br>
+<input type="text" name="title" placeholder="Research Title" required><br><br>
 
-        <button type="submit">Save</button>
-    </form>
-    <a id="a1" href="read.php">View Transactions</a>
-</div>
-</body>
-</html>
+<input type="text" name="author" placeholder="Author" required><br><br>
+
+<input type="text" name="category" placeholder="Category" required><br><br>
+
+<input type="number" name="year" placeholder="Year" required><br><br>
+
+<button type="submit">Add Research</button>
+
+</form>

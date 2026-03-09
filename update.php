@@ -1,72 +1,55 @@
 <?php
-require 'db.php';
+session_start(); // Session protection if you use login
+
+require 'database.php';
+
+// Check if ID is provided
+if(!isset($_GET['id'])){
+    die("ID not provided");
+}
 
 $id = $_GET['id'];
-$stmt = $pdo->prepare("SELECT * FROM transactions WHERE id = :id");
-$stmt->execute([':id' => $id]);
+
+// Fetch the existing record
+$stmt = $pdo->prepare("SELECT * FROM researches WHERE id=?");
+$stmt->execute([$id]);
 $data = $stmt->fetch();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $item = $_POST['item'];
-    $price = $_POST['price'];
-    $qty = $_POST['qty'];
+// If no record found
+if(!$data){
+    die("Record not found");
+}
 
-    // Server-side validation (still needed for security)
-    if ($price < 0 || $qty < 0) {
-        $error = "Error: Price and quantity must not be negative.";
+// Process form submission
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+    $title = $_POST['title'];
+    $author = $_POST['author'];
+    $category = $_POST['category'];
+    $year = $_POST['year'];
+
+    // Simple validation
+    if(empty($title) || empty($author) || empty($category) || empty($year)){
+        $error = "All fields are required";
     } else {
-        $total = $price * $qty;
-        $sql = "UPDATE transactions 
-                SET item=:item, price=:price, qty=:qty, total=:total 
-                WHERE id=:id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':item' => $item,
-            ':price' => $price,
-            ':qty' => $qty,
-            ':total' => $total,
-            ':id' => $id
-        ]);
+        $stmt = $pdo->prepare("UPDATE researches SET title=?, author=?, category=?, year=? WHERE id=?");
+        $stmt->execute([$title, $author, $category, $year, $id]);
+
+        // Redirect back to read.php
         header("Location: read.php");
-        exit;
+        exit(); // Important!
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Transaction</title>
-    <link rel="stylesheet" href="css.css">
-</head>
-<body>
-<div class="container">
-    <h2>Edit Transaction</h2>
 
-    <!-- Show error message if server-side validation fails -->
-    <?php if (!empty($error)): ?>
-        <p style="color:red;"><?= $error ?></p>
-    <?php endif; ?>
+<h2>Update Research</h2>
 
-    <form method="post">
-        <label for="item">Item:</label>
-        <input type="text" id="item" name="item" 
-               value="<?= htmlspecialchars($data['item']) ?>" required><br>
+<?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" 
-               min="0" step="0.01" 
-               value="<?= htmlspecialchars($data['price']) ?>" required><br>
-
-        <label for="qty">Qty:</label>
-        <input type="number" id="qty" name="qty" 
-               min="0" 
-               value="<?= htmlspecialchars($data['qty']) ?>" required><br>
-
-        <button type="submit">Update</button>
-    </form>
-    <a href="read.php">Back to Transactions</a>
-</div>
-</body>
-</html>
+<form method="POST">
+    <input type="text" name="title" value="<?= htmlspecialchars($data['title']) ?>" required><br><br>
+    <input type="text" name="author" value="<?= htmlspecialchars($data['author']) ?>" required><br><br>
+    <input type="text" name="category" value="<?= htmlspecialchars($data['category']) ?>" required><br><br>
+    <input type="number" name="year" value="<?= htmlspecialchars($data['year']) ?>" required><br><br>
+    <button type="submit">Update</button>
+</form>

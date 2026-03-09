@@ -1,44 +1,48 @@
 <?php
 session_start();
+require 'database.php'; // Make sure database.php is in the same folder
 
-if (isset($_SESSION['username'])) {
-    header("Location: dashboard.php");
-    exit();
-}
+if($_SERVER["REQUEST_METHOD"] == "POST") {
 
-$error = "";
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
-
-    if (empty($username)) {
-        $error = "Please enter a username.";
+    if(empty($email) || empty($password)){
+        $error = "All fields are required";
     } else {
-        $_SESSION['username'] = $username;
+        // Check if email exists
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email=?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
 
-        setcookie("username", $username, time() + 3600, "/");
+        if($user){
+            // Verify password
+            if(password_verify($password, $user['password'])){
+                // Set session
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['name'];
 
-        header("Location: dashboard.php");
-        exit();
+                // Redirect to dashboard
+                header("Location: dashboard.php");
+                exit();
+            } else {
+                $error = "Incorrect password";
+            }
+        } else {
+            $error = "Email not registered";
+        }
     }
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>REMS - Login</title>
-</head>
-<body>
 
-<h2>Research Management System</h2>
-<h3>Login</h3>
+<h2>Login</h2>
 
-<?php if (!empty($error)) echo "<p style='color:red;'>" . htmlspecialchars($error) . "</p>"; ?>
+<?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
 
-<form method="POST" action="">
-    Username: <input type="text" name="username"><br><br>
-    <input type="submit" value="Login">
+<form method="POST">
+    <input type="email" name="email" placeholder="Email" required><br><br>
+    <input type="password" name="password" placeholder="Password" required><br><br>
+    <button type="submit">Login</button>
 </form>
 
-</body>
-</html>
+<p>Don't have an account? <a href="register.php">Register here</a></p>

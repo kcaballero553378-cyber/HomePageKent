@@ -1,13 +1,9 @@
 <?php
-require 'db.php';
- 
- 
-$id = $_GET['id'];
- 
- 
-$stmt = $pdo->prepare("DELETE FROM transactions WHERE id = :id");
-$stmt->execute([':id' => $id]);
- 
- 
-header("Location: read.php");
-?>
+require 'database.php';
+
+$id=$_GET['id'];
+
+$stmt=$pdo->prepare("DELETE FROM researches WHERE id=?");
+$stmt->execute([$id]);
+
+header("Location:read.php");
